@@ -1,4 +1,4 @@
-//MicroService2:Doesnt fail
+//MicroService2:Will not fail
 
 var express = require('express');
 var nodemailer = require("nodemailer");
@@ -9,29 +9,21 @@ const axios = require("axios");
 
 var app = express();
 let verifier = new Verifier("at_EGgoaOpT1WEkuXomX6yLR2rqhPaLK");
-//const verifyAsync = util.promisify(verifier.verify);
-
 
 
 
 async function sendBulk2(req) {
-    let textBody = `Yo {{name}} your email address is {{email}}`;
+    let textBody = req.body.text;
 
-    let recievers = [{
-        email: 'hmbilal.998@gmail.com',
-        name: 'Bilal'
-    }, {
-        email: 'mohdbillu@gmail.com',
-        name: 'Hussain'
-    }];
+    let recievers = req.body.contacts
 
 
     let smtpTransport = nodemailer.createTransport({
         service: "gmail",
         host: "smtp.gmail.com",
         auth: {
-            user: "dsosc.sih@gmail.com",
-            pass: "dsosc1234"
+            user: req.body.email,//"dsosc.sih@gmail.com",
+            pass: req.body.pass//"dsosc1234"
         }
     });
     let template = Handlebars.compile(textBody);
@@ -43,8 +35,6 @@ async function sendBulk2(req) {
 
         try {
             let res = await axios(`https://emailverification.whoisxmlapi.com/api/v1?apiKey=at_EGgoaOpT1WEkuXomX6yLR2rqhPaLK&emailAddress=${recievers[i].email}`);
-            //console.log(res.data)
-            // let data = await verifyAsync(recievers[i].email);
             recieved.push(recievers[i]);
             console.log(recievers[i].name + " Done");
         } catch (err) {
@@ -62,13 +52,13 @@ async function sendBulk2(req) {
         let text = template(data);
         var mailOptions = {
             to: recievers[i].email,
-            subject: 'Testing ma shit',
+            subject: req.body.subject,
             text: text,
             dsn: {
                 id: recievers[i].id,
                 return: 'headers',
                 notify: ['failure', 'delay'],
-                recipient: 'dsosc.sih@gmail.com'
+                recipient: req.body.email
             },
             html: {
                 path: 'index.html'
@@ -95,6 +85,8 @@ app.get('/send', async function (req, res) {
         message: "Processing"
     });
 });
+
+
 app.listen(8080, function () {
     console.log("Listening on Port 8080...");
 });
