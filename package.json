@@ -11,10 +11,13 @@
   "license": "ISC",
   "dependencies": {
     "async": "^2.6.2",
+    "axios": "^0.18.0",
+    "email-verifier": "^0.4.1",
     "express": "^4.16.4",
     "handlebars": "^4.1.0",
     "nodemailer": "^5.1.1",
     "nodemon": "^1.18.10",
+    "util": "^0.11.1",
     "wring-js": "^1.0.0"
   }
 }
